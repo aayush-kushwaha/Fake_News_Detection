@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veritas Lens | Fake News Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Veritas Lens</p>
+      <h1>Fake News Detection, <span>Explained</span></h1>
+      <p class="subtitle">Classify article text, generate risk analysis, and attach reference-backed fact-check evidence.</p>
+    </header>
+
+    <section class="panel input-panel">
+      <label for="articleText">Paste article text</label>
+      <textarea id="articleText" placeholder="Paste full article content here..."></textarea>
+      <div class="controls">
+        <label class="check-wrap">
+          <input type="checkbox" id="useLlm" checked />
+          Enable LLM analysis
+        </label>
+        <button id="analyzeBtn" type="button">Analyze Article</button>
+      </div>
+      <p id="statusLine" class="status idle">Waiting for input.</p>
+    </section>
+
+    <section class="panel output-panel" id="outputPanel">
+      <div class="kpi-row">
+        <article class="kpi-card">
+          <h3>Prediction</h3>
+          <p id="predictionText" class="big-value">-</p>
+        </article>
+        <article class="kpi-card">
+          <h3>Confidence</h3>
+          <p id="confidenceText" class="big-value">-</p>
+          <div class="meter"><span id="confidenceBar"></span></div>
+        </article>
+        <article class="kpi-card">
+          <h3>Fact-check Verdict</h3>
+          <p id="verdictText" class="big-value">-</p>
+        </article>
+      </div>
+
+      <div class="grid-two">
+        <article class="detail-card">
+          <h4>Summary</h4>
+          <pre id="summaryText">-</pre>
+        </article>
+        <article class="detail-card">
+          <h4>Risk Explanation</h4>
+          <pre id="riskText">-</pre>
+        </article>
+      </div>
+
+      <article class="detail-card">
+        <h4>Fact-check References</h4>
+        <ul id="referencesList" class="references"></ul>
+      </article>
+
+      <article class="detail-card" id="warningsCard">
+        <h4>Warnings</h4>
+        <ul id="warningsList"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
