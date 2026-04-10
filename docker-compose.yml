@@ -1,0 +1,13 @@
+services:
+  fake-news-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fake-news-app
+    ports:
+      - "8000:8000"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-20b}
+      FAKE_NEWS_DATASET: ${FAKE_NEWS_DATASET:-data/fake_real_combined.csv}
+    restart: unless-stopped

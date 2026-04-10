@@ -1,0 +1,14 @@
+.git
+.gitignore
+.venv
+venv
+env
+ENV
+__pycache__
+.ipynb_checkpoints
+*.ipynb
+outputs
+*.log
+*.zip
+*.tar
+*.gz
