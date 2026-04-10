@@ -28,6 +28,8 @@ model_service = FakeNewsModelService(dataset_csv=DATASET_CSV)
 
 
 def _label_name(label: int) -> str:
+    if label == -1:
+        return "review"
     return "fake" if label == 1 else "real"
 
 

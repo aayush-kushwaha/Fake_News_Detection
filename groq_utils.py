@@ -159,7 +159,7 @@ def retrieve_trusted_evidence(query: str, max_results: int = 5) -> List[Dict[str
                         "title": title,
                         "url": url,
                         "snippet": snippet,
-                        "source_type": "trusted" if _is_trusted_source(url) else "other",
+                        "source_type": "trusted" if _is_trusted_source(url) else "fallback",
                     }
                     if entry["source_type"] == "trusted":
                         results.append(entry)
@@ -184,7 +184,7 @@ def retrieve_trusted_evidence(query: str, max_results: int = 5) -> List[Dict[str
                         "title": title,
                         "url": url,
                         "snippet": snippet,
-                        "source_type": "trusted" if _is_trusted_source(url) else "other",
+                        "source_type": "trusted" if _is_trusted_source(url) else "fallback",
                     }
                     if entry["source_type"] == "trusted":
                         results.append(entry)
@@ -236,6 +236,7 @@ def fact_check_with_external_references(
             "explanation": "No external evidence was retrieved for this article.",
             "references": [],
             "raw_model_output": None,
+            "has_trusted_references": False,
         }
 
     has_trusted = any(ev.get("source_type") == "trusted" for ev in evidence)
@@ -308,7 +309,7 @@ def format_fact_check_report(result: Dict[str, Any]) -> str:
         lines.append("- None")
     else:
         for ref in refs:
-            source_tag = ref.get("source_type", "other")
+            source_tag = ref.get("source_type", "fallback")
             lines.append(f"- [{source_tag}] {ref.get('title', '')}: {ref.get('url', '')}")
     if not result.get("has_trusted_references", False):
         lines.append("Note: No trusted-source references were found; treat verdict as low confidence.")

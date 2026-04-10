@@ -45,7 +45,8 @@ function renderReferences(factCheck) {
   factCheck.references.forEach((ref) => {
     const li = document.createElement("li");
     const tag = document.createElement("strong");
-    tag.textContent = `[${ref.source_type || "other"}] `;
+    const sourceType = ref.source_type || "fallback";
+    tag.textContent = `[${sourceType}] `;
 
     const link = document.createElement("a");
     link.href = ref.url;
@@ -83,17 +84,28 @@ async function runAnalysis() {
 
     const data = await res.json();
     const confPct = Math.round((data.prediction.confidence || 0) * 100);
+    const factCheck = data.fact_check || null;
+    const verdictLabel = factCheck
+      ? (factCheck.has_trusted_references ? factCheck.verdict : `${factCheck.verdict} (fallback-only)`)
+      : "N/A";
+    const predictionLabel = data.prediction.label_name === "review"
+      ? "REVIEW"
+      : data.prediction.label_name.toUpperCase();
 
-    predictionText.textContent = data.prediction.label_name.toUpperCase();
+    predictionText.textContent = predictionLabel;
     confidenceText.textContent = `${confPct}%`;
     confidenceBar.style.width = `${confPct}%`;
 
-    verdictText.textContent = data.fact_check ? data.fact_check.verdict : "N/A";
+    verdictText.textContent = verdictLabel;
     summaryText.textContent = data.summary || "No summary available.";
     riskText.textContent = data.risk_explanation || "No risk explanation available.";
 
-    renderReferences(data.fact_check);
-    renderWarnings(data.warnings || []);
+    renderReferences(factCheck);
+    const warnings = [...(data.warnings || [])];
+    if (factCheck && !factCheck.has_trusted_references) {
+      warnings.unshift("External references are fallback-only, so verdict confidence is limited.");
+    }
+    renderWarnings(warnings);
     setStatus("Analysis completed.", "success");
   } catch (err) {
     setStatus(`Analysis failed: ${err.message}`, "error");

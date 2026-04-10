@@ -21,7 +21,7 @@ class ReferenceItem(BaseModel):
     title: str
     url: str
     snippet: str
-    source_type: Optional[str] = "other"
+    source_type: Optional[str] = "fallback"
 
 
 class FactCheckResponse(BaseModel):
