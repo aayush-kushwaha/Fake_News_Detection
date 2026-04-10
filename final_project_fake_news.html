@@ -7532,7 +7532,7 @@ a.anchor-link {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -7642,7 +7642,7 @@ GPU: NVIDIA GeForce RTX 3050 Laptop GPU
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [25]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">remove_publisher_tags</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -7780,10 +7780,12 @@ Train: 31278 | Val: 3910 | Test: 3910
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [26]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">baseline_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">FAKE_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.78</span>
+
+<span class="n">baseline_candidates</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">max_features</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">50000</span><span class="p">]:</span>
     <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]:</span>
         <span class="n">vec</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span> <span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">min_df</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -7793,7 +7795,8 @@ Train: 31278 | Val: 3910 | Test: 3910
         <span class="n">clf</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">class_weight</span><span class="o">=</span><span class="s1">'balanced'</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
         <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Xtr</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 
-        <span class="n">val_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xv</span><span class="p">)</span>
+        <span class="n">val_proba</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xv</span><span class="p">)</span>
+        <span class="n">val_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">val_proba</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">FAKE_THRESHOLD</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">val_m</span> <span class="o">=</span> <span class="n">compute_metrics</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">val_pred</span><span class="p">)</span>
         <span class="n">baseline_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">val_m</span><span class="p">[</span><span class="s1">'f1'</span><span class="p">],</span> <span class="n">max_features</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">val_m</span><span class="p">))</span>
 
@@ -7801,10 +7804,11 @@ Train: 31278 | Val: 3910 | Test: 3910
 <span class="n">_</span><span class="p">,</span> <span class="n">best_max_features</span><span class="p">,</span> <span class="n">best_C</span><span class="p">,</span> <span class="n">baseline_vec</span><span class="p">,</span> <span class="n">baseline_model</span><span class="p">,</span> <span class="n">baseline_val_metrics</span> <span class="o">=</span> <span class="n">baseline_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="n">Xte</span> <span class="o">=</span> <span class="n">baseline_vec</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="n">baseline_test_pred</span> <span class="o">=</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Xte</span><span class="p">)</span>
+<span class="n">baseline_test_proba</span> <span class="o">=</span> <span class="n">baseline_model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">Xte</span><span class="p">)</span>
+<span class="n">baseline_test_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">baseline_test_proba</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">FAKE_THRESHOLD</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">baseline_test_metrics</span> <span class="o">=</span> <span class="n">compute_metrics</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">baseline_test_pred</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">'Best baseline params:'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'max_features'</span><span class="p">:</span> <span class="n">best_max_features</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">:</span> <span class="n">best_C</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Best baseline params:'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'max_features'</span><span class="p">:</span> <span class="n">best_max_features</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">:</span> <span class="n">best_C</span><span class="p">,</span> <span class="s1">'fake_threshold'</span><span class="p">:</span> <span class="n">FAKE_THRESHOLD</span><span class="p">})</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">'Test metrics:'</span><span class="p">,</span> <span class="n">baseline_test_metrics</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -7818,8 +7822,8 @@ Train: 31278 | Val: 3910 | Test: 3910
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Best baseline params: {'max_features': 20000, 'C': 2.0}
-Test metrics: {'accuracy': 0.9879795396419437, 'precision': 0.9904333145751266, 'recall': 0.9832402234636871, 'f1': 0.9868236613400617}
+<pre>Best baseline params: {'max_features': 20000, 'C': 2.0, 'fake_threshold': 0.78}
+Test metrics: {'accuracy': 0.971611253196931, 'precision': 0.997628927089508, 'recall': 0.9402234636871508, 'f1': 0.9680759275237274}
 </pre>
 </div>
 </div>
@@ -7841,7 +7845,7 @@ Test metrics: {'accuracy': 0.9879795396419437, 'precision': 0.9904333145751266, 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tokenize_basic</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -8149,7 +8153,7 @@ Early stopping triggered.
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [28]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">NewsBERTDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
@@ -8260,7 +8264,7 @@ Running BERT with lr: 1e-05
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████| 100/100 [00:00&lt;00:00, 1108.25it/s]
+<pre>Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████| 100/100 [00:00&lt;00:00, 1434.96it/s]
 <span class="ansi-bold">DistilBertForSequenceClassification LOAD REPORT</span> from: distilbert-base-uncased
 Key                     | Status     | 
 ------------------------+------------+-
@@ -8283,7 +8287,7 @@ Notes:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BERT Epoch 1 Val F1: 0.9936
+<pre>BERT Epoch 1 Val F1: 0.9925
 </pre>
 </div>
 </div>
@@ -8296,7 +8300,7 @@ Notes:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BERT Epoch 2 Val F1: 0.9936
+<pre>BERT Epoch 2 Val F1: 0.9910
 </pre>
 </div>
 </div>
@@ -8309,7 +8313,7 @@ Notes:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BERT Epoch 3 Val F1: 0.9952
+<pre>BERT Epoch 3 Val F1: 0.9938
 
 Running BERT with lr: 2e-05
 </pre>
@@ -8318,7 +8322,7 @@ Running BERT with lr: 2e-05
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████| 100/100 [00:00&lt;00:00, 2897.22it/s]
+<pre>Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████| 100/100 [00:00&lt;00:00, 1789.14it/s]
 <span class="ansi-bold">DistilBertForSequenceClassification LOAD REPORT</span> from: distilbert-base-uncased
 Key                     | Status     | 
 ------------------------+------------+-
@@ -8341,7 +8345,7 @@ Notes:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BERT Epoch 1 Val F1: 0.9936
+<pre>BERT Epoch 1 Val F1: 0.9953
 </pre>
 </div>
 </div>
@@ -8354,7 +8358,7 @@ Notes:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>BERT Epoch 2 Val F1: 0.9927
+<pre>BERT Epoch 2 Val F1: 0.9961
 </pre>
 </div>
 </div>
@@ -8389,7 +8393,7 @@ Notes:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
@@ -8446,14 +8450,6 @@ Notes:
 <tbody>
 <tr>
 <th>0</th>
-<td>BERT_lr_2e-05</td>
-<td>0.996931</td>
-<td>0.998318</td>
-<td>0.994972</td>
-<td>0.996642</td>
-</tr>
-<tr>
-<th>1</th>
 <td>BERT_lr_1e-05</td>
 <td>0.995908</td>
 <td>0.996085</td>
@@ -8461,15 +8457,15 @@ Notes:
 <td>0.995528</td>
 </tr>
 <tr>
-<th>2</th>
-<td>Baseline_LogReg</td>
-<td>0.987980</td>
-<td>0.990433</td>
-<td>0.983240</td>
-<td>0.986824</td>
+<th>1</th>
+<td>BERT_lr_2e-05</td>
+<td>0.995908</td>
+<td>0.997755</td>
+<td>0.993296</td>
+<td>0.995521</td>
 </tr>
 <tr>
-<th>3</th>
+<th>2</th>
 <td>LSTM_v2</td>
 <td>0.984655</td>
 <td>0.981090</td>
@@ -8477,12 +8473,20 @@ Notes:
 <td>0.983278</td>
 </tr>
 <tr>
-<th>4</th>
+<th>3</th>
 <td>LSTM_v1</td>
 <td>0.983376</td>
 <td>0.981037</td>
 <td>0.982682</td>
 <td>0.981859</td>
+</tr>
+<tr>
+<th>4</th>
+<td>Baseline_LogReg</td>
+<td>0.971611</td>
+<td>0.997629</td>
+<td>0.940223</td>
+<td>0.968076</td>
 </tr>
 </tbody>
 </table>
@@ -8507,6 +8511,138 @@ We developed a regex-based method to strip out publisher tags (e.g., <code>'WASH
 After retraining the baseline, LSTM, and DistilBERT models with the cleansed dataset, the F1-scores dropped from a suspicious 0.99 to more realistic values (as seen in the Results table above).</p>
 <p><strong>Conclusion:</strong>
 While the numerical accuracy decreased, this represents a <strong>significantly more robust and generalizable model</strong>. By removing the 'cheat code' embedded in the dataset, the deep learning architectures are now forced to evaluate the actual semantic meaning, context, and linguistic structures of the articles to classify them as fake or real. This refinement ensures the model is learning the true task rather than exploiting a localized data artifact, making it far more applicable to unseen, real-world data.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=efef3d0e">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="7.-Optional-LLM-Layer-(Groq-API)">7. Optional LLM Layer (Groq API)<a class="anchor-link" href="#7.-Optional-LLM-Layer-(Groq-API)">¶</a></h2><p>This section keeps the training pipeline unchanged and adds an optional analysis layer.</p>
+<ul>
+<li><code>summarize_article</code>: 3-bullet summary</li>
+<li><code>explain_fake_news_risk</code>: language-based risk explanation</li>
+<li><code>fact_check_with_external_references</code>: external retrieval plus reference-backed check</li>
+</ul>
+<p>If <code>GROQ_API_KEY</code> is missing, this section can be skipped.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fc1bda2a">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [30]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">groq_utils</span>
+
+<span class="c1"># Ensure notebook uses the latest on-disk helper code.</span>
+<span class="n">groq_utils</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">groq_utils</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Using groq_utils from:"</span><span class="p">,</span> <span class="n">groq_utils</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="n">sample_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Running Groq analysis on </span><span class="si">{</span><span class="n">sample_count</span><span class="si">}</span><span class="s2"> test samples..."</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">sample_count</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_test</span><span class="p">))):</span>
+    <span class="n">article_text</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">*</span> <span class="mi">70</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sample </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> | True label: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Article preview:"</span><span class="p">,</span> <span class="n">article_text</span><span class="p">[:</span><span class="mi">220</span><span class="p">],</span> <span class="s2">"..."</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">groq_utils</span><span class="o">.</span><span class="n">summarize_article</span><span class="p">(</span><span class="n">article_text</span><span class="p">)</span>
+        <span class="n">risk_note</span> <span class="o">=</span> <span class="n">groq_utils</span><span class="o">.</span><span class="n">explain_fake_news_risk</span><span class="p">(</span><span class="n">article_text</span><span class="p">)</span>
+        <span class="n">fact_result</span> <span class="o">=</span> <span class="n">groq_utils</span><span class="o">.</span><span class="n">fact_check_with_external_references</span><span class="p">(</span><span class="n">article_text</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Groq summary:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">summary</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Groq risk explanation:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">risk_note</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">External fact-check report:</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">groq_utils</span><span class="o">.</span><span class="n">format_fact_check_report</span><span class="p">(</span><span class="n">fact_result</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Groq call skipped or failed:"</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Tip: set GROQ_API_KEY in .env and install dependencies from requirements.txt."</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Using groq_utils from: /mnt/d/PROJECTS/Fake_News_Detection/groq_utils.py
+Running Groq analysis on 2 test samples...
+
+======================================================================
+Sample 0 | True label: 0
+Article preview: u s president barack obama highlighting his pledge to send people to mars by the 2030s on tuesday announced further public private efforts to build habitats that could help humans live long term far from the earth we are ...
+
+Groq summary:
+ - **Claim**: President Barack Obama re‑affirms the U.S. goal of sending astronauts to Mars by the 2030s, calling for public‑private collaboration to build deep‑space habitats that support long‑duration missions.  
+- **Named entities**: Obama, NASA, CNN, White House, Pittsburgh, International Space Station (ISS) docking port; political figures Hillary Clinton and Donald Trump are mentioned in context.  
+- **Tone**: Forward‑looking and optimistic about space exploration, tempered by the political and fiscal uncertainty surrounding future funding and leadership after Obama’s term ends.
+
+Groq risk explanation:
+ **Assessment:**  
+The piece relies heavily on vague, repetitive language (“we’re working with partners to build habitats”) and claims (“Obama said in an opinion piece on CNN”) without providing links, dates, or supporting evidence. It mixes general statements about NASA, the White House, and commercial space efforts without clarifying who is responsible or what specific projects are underway. The tone is promotional and emotional (“sending humans to Mars by the 2030s”), but there are no internal contradictions—just a lack of verifiable detail. Because of the missing citations and the broad, unsubstantiated claims, the article could mislead readers by implying concrete plans or official endorsements that are not fully documented.
+
+External fact-check report:
+
+Verdict: supported
+Confidence: 90
+Explanation: Reuters and NBC News articles from October 2016 report that President Obama announced public‑private efforts to build habitats to support human missions to Mars by the 2030s, directly confirming the article’s claim.
+References:
+- [trusted] Obama says work has begun on habitats to help humans reach Mars: https://www.reuters.com/article/world/obama-says-work-has-begun-on-habitats-to-help-humans-reach-mars-idUSKCN12B1OL/
+- [trusted] U.S. Partnering With Private Firms to Send Humans to Mars by ...: https://www.nbcnews.com/science/science-news/u-s-partnering-private-firms-send-humans-mars-2030s-obama-n664286
+
+======================================================================
+Sample 1 | True label: 1
+Article preview: newt gingrich revealed the incredibly entitled reason trump ran for president you ll be furious newt gingrich has been one of donald trump s most vocal cheerleaders but in a new book he threw his president under the bus  ...
+
+Groq summary:
+ - **Main claim:** Newt Gingrich alleges Trump ran for president to treat the office as a lucrative “toy” he could buy, prioritizing personal enrichment over public service.  
+- **Key named entities:** Newt Gingrich, Donald Trump, ABC News, South Carolina primary, MarketWatch.  
+- **Overall tone:** sharply critical, depicting Trump as unprepared, self‑interested, and corrupt, with the presidency seen as a threat to U.S. reputation.
+
+Groq risk explanation:
+ The piece is written in a highly sensational style – phrases like “you’ll be furious” and “incredibly entitled reason” signal a pushy tone. It relies on vague references (“excerpt published by ABC News,” “source MarketWatch”) without providing direct quotations or links, and it makes strong claims (e.g., Trump “doesn’t read” briefing documents, “helped accomplish the Russian goal”) that are not supported with evidence. The narrative is emotional, painting Trump in a very negative light, and contains a few internal inconsistencies (e.g., contradictory statements about how much money Trump spent). Overall, the article reads more like opinion or rumor than a fact‑based report.
+
+External fact-check report:
+
+Verdict: insufficient_evidence
+Confidence: 90
+Explanation: None of the provided sources discuss or corroborate the claims made in the article.
+References:
+- [trusted] washingtonpost.com/news/the-fix/wp/2016/10/25/you-are-fascinated...: https://www.washingtonpost.com/news/the-fix/wp/2016/10/25/you-are-fascinated-with-sex-that-megyn-kelly-newt-gingrich-showdown-was-one-for-the-ages/
+- [trusted] Opinion |Trump’s Napalm Politics? They Began WithNewt- The New...: https://www.nytimes.com/2020/06/28/opinion/trump-newt-gingrich.html
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=dfc1e2f0-77a8-41ac-b2ef-c50e463e1d0a">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
 </div>
 </div>
 </div>
