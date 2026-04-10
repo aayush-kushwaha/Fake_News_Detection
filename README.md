@@ -219,6 +219,3 @@ Usage policy:
 - Educational and evaluation use only
 - No commercial use without explicit permission from the project author(s)
 - Attribution required when referencing project code, reports, or results
-
-Unless your instructor provides a different template, treat this work as
-"All Rights Reserved" outside course-related usage.
