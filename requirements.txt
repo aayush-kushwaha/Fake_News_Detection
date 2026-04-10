@@ -1,0 +1,94 @@
+accelerate==1.13.0
+annotated-doc==0.0.4
+anyio==4.13.0
+asttokens==3.0.1
+certifi==2026.2.25
+charset-normalizer==3.4.7
+click==8.3.2
+comm==0.2.3
+contourpy @ file:///home/conda/feedstock_root/build_artifacts/contourpy_1744743067588/work
+cycler @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_cycler_1764466758/work
+debugpy==1.8.20
+decorator==5.2.1
+exceptiongroup==1.3.1
+executing==2.2.1
+filelock @ file:///home/conda/feedstock_root/build_artifacts/filelock_1773313889543/work
+fonttools @ file:///home/conda/feedstock_root/build_artifacts/fonttools_1773137064424/work
+fsspec @ file:///home/conda/feedstock_root/build_artifacts/fsspec_1774699460035/work
+gmpy2 @ file:///home/conda/feedstock_root/build_artifacts/gmpy2_1773244929835/work
+h11==0.16.0
+hf-xet==1.4.3
+httpcore==1.0.9
+httpx==0.28.1
+huggingface_hub==1.9.1
+idna==3.11
+ipykernel==7.2.0
+ipython==8.39.0
+jedi==0.19.2
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_jinja2_1764517220/work
+joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1765794027227/work
+jupyter_client==8.8.0
+jupyter_core==5.9.1
+kagglehub==1.0.0
+kagglesdk==0.1.16
+kiwisolver @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_kiwisolver_1773067043/work
+markdown-it-py==4.0.0
+MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1772444934960/work
+matplotlib==3.8.4
+matplotlib-inline==0.2.1
+mdurl==0.1.2
+mpmath @ file:///home/conda/feedstock_root/build_artifacts/mpmath_1733302684489/work
+munkres==1.1.4
+nest-asyncio==1.6.0
+networkx @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_networkx_1731521053/work
+numpy==1.26.4
+optree @ file:///home/conda/feedstock_root/build_artifacts/optree_1771868160093/work
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1769093650/work
+pandas==2.2.3
+parso==0.8.6
+patsy @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_patsy_1760998269/work
+pexpect==4.9.0
+pillow @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pillow_1775060059/work
+platformdirs==4.9.4
+prompt_toolkit==3.0.52
+protobuf==7.34.1
+psutil==7.2.2
+ptyprocess==0.7.0
+pure_eval==0.2.3
+pyarrow==23.0.1
+pybind11 @ file:///D:/bld/bld/rattler-build_pybind11_1755953378/work
+pybind11-global @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pybind11-global_1755953338/work
+Pygments==2.20.0
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyparsing_1769003998/work
+PySide6==6.11.0
+python-dateutil==2.9.0.post0
+pytz==2026.1.post1
+PyYAML==6.0.3
+pyzmq==27.1.0
+regex==2026.4.4
+requests==2.33.1
+rich==14.3.3
+safetensors==0.7.0
+scikit-learn==1.4.2
+scipy @ file:///home/conda/feedstock_root/build_artifacts/scipy-split_1739790642651/work/dist/scipy-1.15.2-cp310-cp310-linux_x86_64.whl#sha256=9e52bad6c3294d1a5b04a13632118ca2157130603c6c018c2d710162b223b27e
+seaborn @ file:///home/conda/feedstock_root/build_artifacts/seaborn-split_1733730015268/work
+shellingham==1.5.4
+shiboken6==6.11.0
+six==1.17.0
+stack-data==0.6.3
+statsmodels @ file:///home/conda/feedstock_root/build_artifacts/statsmodels_1764982982951/work
+sympy @ file:///home/conda/feedstock_root/build_artifacts/sympy_1771952240620/work
+threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1741878222898/work
+tokenizers==0.22.2
+torch @ file:///home/conda/feedstock_root/build_artifacts/libtorch_1772176447874/work
+tornado @ file:///home/conda/feedstock_root/build_artifacts/tornado_1774357896577/work
+tqdm @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_tqdm_1770153424/work
+traitlets==5.14.3
+transformers==5.5.0
+triton @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_triton_1771627584/work
+typer==0.24.1
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_typing_extensions_1756220668/work
+tzdata==2026.1
+unicodedata2 @ file:///home/conda/feedstock_root/build_artifacts/unicodedata2_1770908960326/work
+urllib3==2.6.3
+wcwidth==0.6.0
