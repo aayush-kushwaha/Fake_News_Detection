@@ -34,42 +34,62 @@
     </section>
 
     <section class="panel output-panel" id="outputPanel">
+      <article class="detail-card explain-banner" id="agreementBanner">
+        <h4>Decision Flow</h4>
+        <p id="agreementText">Run an analysis to compare ML patterns with LLM evidence checks.</p>
+      </article>
+
       <div class="kpi-row">
         <article class="kpi-card">
-          <h3>Prediction</h3>
-          <p id="predictionText" class="big-value">-</p>
+          <h3>Writing Pattern Check</h3>
+          <p id="mlPatternText" class="big-value verdict-chip">-</p>
+          <p id="mlConfidenceText" class="mini-value">-</p>
+          <div class="meter"><span id="mlConfidenceBar"></span></div>
         </article>
         <article class="kpi-card">
-          <h3>Confidence</h3>
-          <p id="confidenceText" class="big-value">-</p>
-          <div class="meter"><span id="confidenceBar"></span></div>
+          <h3>Evidence Check</h3>
+          <p id="llmVerdictText" class="big-value verdict-chip">-</p>
+          <p id="llmConfidenceText" class="mini-value">-</p>
+          <p id="llmSourceText" class="mini-value">-</p>
         </article>
         <article class="kpi-card">
-          <h3>Fact-check Verdict</h3>
-          <p id="verdictText" class="big-value">-</p>
+          <h3>Overall Result</h3>
+          <p id="finalVerdictText" class="big-value verdict-chip">-</p>
+          <p id="finalConfidenceText" class="mini-value">-</p>
+          <div class="meter"><span id="finalConfidenceBar"></span></div>
         </article>
-      </div>
-
-      <div class="grid-two">
-        <article class="detail-card">
-          <h4>Summary</h4>
-          <pre id="summaryText">-</pre>
-        </article>
-        <article class="detail-card">
-          <h4>Risk Explanation</h4>
-          <pre id="riskText">-</pre>
+        <article class="kpi-card">
+          <h3>Agreement</h3>
+          <p id="agreementStatusText" class="big-value">-</p>
+          <p class="mini-value">ML patterns vs LLM evidence</p>
         </article>
       </div>
 
       <article class="detail-card">
-        <h4>Fact-check References</h4>
-        <ul id="referencesList" class="references"></ul>
+        <h4>Why This Final Decision?</h4>
+        <pre id="finalWhyText">-</pre>
       </article>
 
-      <article class="detail-card" id="warningsCard">
-        <h4>Warnings</h4>
+      <div class="grid-two">
+        <details class="detail-card detail-accordion" open>
+          <summary>Summary</summary>
+          <pre id="summaryText">-</pre>
+        </details>
+        <details class="detail-card detail-accordion" open>
+          <summary>Risk Explanation</summary>
+          <pre id="riskText">-</pre>
+        </details>
+      </div>
+
+      <details class="detail-card detail-accordion" open>
+        <summary>Fact-check References</summary>
+        <ul id="referencesList" class="references"></ul>
+      </details>
+
+      <details class="detail-card detail-accordion" id="warningsCard" open>
+        <summary>Warnings</summary>
         <ul id="warningsList"></ul>
-      </article>
+      </details>
     </section>
   </main>
 

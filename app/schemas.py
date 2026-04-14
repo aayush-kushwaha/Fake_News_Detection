@@ -32,8 +32,33 @@ class FactCheckResponse(BaseModel):
     has_trusted_references: Optional[bool] = False
 
 
+class MlAssessment(BaseModel):
+    label: int
+    label_name: str
+    confidence: float
+    summary: str
+
+
+class LlmAssessment(BaseModel):
+    verdict: str
+    confidence: int
+    explanation: str
+    has_trusted_references: bool
+    summary: str
+
+
+class FinalAssessment(BaseModel):
+    verdict: str
+    confidence: int
+    agreement_status: str
+    explanation: str
+
+
 class AnalyzeResponse(BaseModel):
     prediction: PredictResponse
+    ml_assessment: Optional[MlAssessment] = None
+    llm_assessment: Optional[LlmAssessment] = None
+    final_assessment: Optional[FinalAssessment] = None
     summary: Optional[str] = None
     risk_explanation: Optional[str] = None
     fact_check: Optional[FactCheckResponse] = None
