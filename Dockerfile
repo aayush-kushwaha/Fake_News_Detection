@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY runtime-requirements.txt ./
+RUN pip install --upgrade pip && pip install -r runtime-requirements.txt
 
 COPY app ./app
 COPY groq_utils.py ./groq_utils.py

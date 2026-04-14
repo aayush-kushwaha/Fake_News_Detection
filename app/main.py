@@ -1,4 +1,5 @@
 import os
+import threading
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -27,6 +28,14 @@ DATASET_CSV = os.environ.get("FAKE_NEWS_DATASET", "data/fake_real_combined.csv")
 model_service = FakeNewsModelService(dataset_csv=DATASET_CSV)
 
 
+def _warm_model_in_background() -> None:
+    try:
+        model_service.load_or_train()
+        print("Model artifact loaded and ready")
+    except Exception as exc:
+        print(f"Model initialization warning: {exc}")
+
+
 def _label_name(label: int) -> str:
     if label == -1:
         return "review"
@@ -35,11 +44,7 @@ def _label_name(label: int) -> str:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    try:
-        model_service.load_or_train()
-        print("Model trained and ready")
-    except Exception as exc:
-        print(f"Model initialization warning: {exc}")
+    threading.Thread(target=_warm_model_in_background, daemon=True).start()
     yield
 
 

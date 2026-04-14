@@ -2,7 +2,7 @@ import os
 import re
 from dataclasses import dataclass
 
-import pandas as pd
+from joblib import load
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
@@ -18,6 +18,7 @@ class FakeNewsModelService:
 
     def __init__(self, dataset_csv: str) -> None:
         self.dataset_csv = dataset_csv
+        self.artifact_path = os.getenv("FAKE_NEWS_ARTIFACT_PATH", "data/model_artifacts.joblib")
         self.artifacts: ModelArtifacts | None = None
 
     @staticmethod
@@ -40,24 +41,17 @@ class FakeNewsModelService:
         return text
 
     def load_or_train(self) -> None:
-        if not os.path.exists(self.dataset_csv):
-            raise FileNotFoundError(f"Dataset not found at {self.dataset_csv}")
+        if not os.path.exists(self.artifact_path):
+            raise FileNotFoundError(
+                f"Model artifact not found at {self.artifact_path}. "
+                "Server mode is artifact-only; train locally and copy model_artifacts.joblib to the server."
+            )
 
-        df = pd.read_csv(self.dataset_csv)
-        if "text" not in df.columns or "label" not in df.columns:
-            raise ValueError("Dataset must contain 'text' and 'label' columns")
+        cached = load(self.artifact_path)
+        if not isinstance(cached, dict) or "vectorizer" not in cached or "model" not in cached:
+            raise ValueError("Invalid model artifact format. Expected keys: vectorizer, model")
 
-        df = df[["text", "label"]].dropna().copy()
-        df["text"] = df["text"].astype(str).apply(self._clean_text)
-        df["label"] = df["label"].astype(int)
-
-        vectorizer = TfidfVectorizer(max_features=50000, ngram_range=(1, 2), min_df=2)
-        X = vectorizer.fit_transform(df["text"])
-
-        model = LogisticRegression(max_iter=1200, C=1.0, class_weight="balanced", random_state=42)
-        model.fit(X, df["label"])
-
-        self.artifacts = ModelArtifacts(vectorizer=vectorizer, model=model)
+        self.artifacts = ModelArtifacts(vectorizer=cached["vectorizer"], model=cached["model"])
 
     @property
     def is_ready(self) -> bool:
