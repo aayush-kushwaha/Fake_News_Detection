@@ -21,6 +21,13 @@ const riskText = document.getElementById("riskText");
 const referencesList = document.getElementById("referencesList");
 const warningsCard = document.getElementById("warningsCard");
 const warningsList = document.getElementById("warningsList");
+const chatPanel = document.getElementById("chatPanel");
+const chatThread = document.getElementById("chatThread");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+const chatPromptButtons = document.querySelectorAll(".chat-prompt");
+
+let latestAnalysis = null;
 
 function setDecisionFlowVisibility(isVisible) {
   agreementBanner.style.display = isVisible ? "block" : "none";
@@ -122,6 +129,74 @@ function renderReferences(factCheck) {
   });
 }
 
+function setChatEnabled(enabled) {
+  chatInput.disabled = !enabled;
+  chatSendBtn.disabled = !enabled;
+  chatPromptButtons.forEach((btn) => {
+    btn.disabled = !enabled;
+  });
+}
+
+function appendChatMessage(role, text) {
+  const placeholder = chatThread.querySelector(".chat-placeholder");
+  if (placeholder) {
+    placeholder.remove();
+  }
+
+  const row = document.createElement("div");
+  row.className = `chat-msg chat-${role}`;
+  row.textContent = text;
+  chatThread.appendChild(row);
+  chatThread.scrollTop = chatThread.scrollHeight;
+}
+
+async function sendFollowupQuestion(prefilledQuestion = null) {
+  const question = (prefilledQuestion || chatInput.value || "").trim();
+  if (!question) {
+    return;
+  }
+  if (!latestAnalysis) {
+    setStatus("Run analysis first before asking follow-up questions.", "error");
+    return;
+  }
+
+  appendChatMessage("user", question);
+  chatInput.value = "";
+  setStatus("Asking Groq follow-up...", "loading");
+  setChatEnabled(false);
+
+  try {
+    const payload = {
+      text: articleText.value.trim(),
+      question,
+      ml_assessment: latestAnalysis.ml_assessment || null,
+      llm_assessment: latestAnalysis.llm_assessment || null,
+      final_assessment: latestAnalysis.final_assessment || null,
+      fact_check: latestAnalysis.fact_check || null,
+    };
+
+    const res = await fetch("/api/chat-followup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || `Request failed (${res.status})`);
+    }
+
+    const data = await res.json();
+    appendChatMessage("assistant", data.answer || "No response from assistant.");
+    setStatus("Follow-up answered.", "success");
+  } catch (err) {
+    appendChatMessage("assistant", `Follow-up failed: ${err.message}`);
+    setStatus(`Follow-up failed: ${err.message}`, "error");
+  } finally {
+    setChatEnabled(true);
+  }
+}
+
 async function runAnalysis() {
   const text = articleText.value.trim();
   const llmEnabled = useLlm.checked;
@@ -148,6 +223,7 @@ async function runAnalysis() {
     }
 
     const data = await res.json();
+    latestAnalysis = data;
     const mlConfPct = Math.round(((data.ml_assessment?.confidence ?? data.prediction.confidence) || 0) * 100);
     const factCheck = data.fact_check || null;
     const llmAssessment = data.llm_assessment || null;
@@ -208,8 +284,13 @@ async function runAnalysis() {
       warnings.unshift("External references are fallback-only, so verdict confidence is limited.");
     }
     renderWarnings(warnings);
+
+    chatThread.innerHTML = "<p class=\"chat-placeholder\">You can now ask follow-up questions about this analysis.</p>";
+    setChatEnabled(true);
     setStatus("Analysis completed.", "success");
   } catch (err) {
+    latestAnalysis = null;
+    setChatEnabled(false);
     setStatus(`Analysis failed: ${err.message}`, "error");
   } finally {
     analyzeBtn.disabled = false;
@@ -219,3 +300,20 @@ async function runAnalysis() {
 analyzeBtn.addEventListener("click", runAnalysis);
 useLlm.addEventListener("change", () => setDecisionFlowVisibility(useLlm.checked));
 setDecisionFlowVisibility(useLlm.checked);
+
+chatSendBtn.addEventListener("click", () => sendFollowupQuestion());
+chatInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendFollowupQuestion();
+  }
+});
+
+chatPromptButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const prompt = btn.dataset.prompt || "";
+    sendFollowupQuestion(prompt);
+  });
+});
+
+setChatEnabled(false);

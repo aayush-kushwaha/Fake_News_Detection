@@ -65,6 +65,21 @@ class AnalyzeResponse(BaseModel):
     warnings: List[str] = []
 
 
+class ChatFollowupRequest(BaseModel):
+    text: str = Field(..., min_length=20, description="Original news article text")
+    question: str = Field(..., min_length=2, description="User follow-up question")
+    ml_assessment: Optional[MlAssessment] = None
+    llm_assessment: Optional[LlmAssessment] = None
+    final_assessment: Optional[FinalAssessment] = None
+    fact_check: Optional[FactCheckResponse] = None
+
+
+class ChatFollowupResponse(BaseModel):
+    answer: str
+    grounded: bool = True
+    used_llm: bool = True
+
+
 class HealthResponse(BaseModel):
     status: str
     model_ready: bool

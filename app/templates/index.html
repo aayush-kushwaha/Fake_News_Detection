@@ -14,13 +14,12 @@
   <div class="orb orb-b"></div>
 
   <main class="shell">
-    <header class="hero">
-      <p class="eyebrow">Veritas Lens</p>
-      <h1>Fake News Detection, <span>Explained</span></h1>
-      <p class="subtitle">Classify article text, generate risk analysis, and attach reference-backed fact-check evidence.</p>
-    </header>
-
     <section class="panel input-panel">
+      <div class="panel-header">
+        <p class="eyebrow">Veritas Lens</p>
+        <h1>Fake News Detection, <span>Explained</span></h1>
+        <p class="subtitle">Classify article text, generate risk analysis, and attach reference-backed fact-check evidence.</p>
+      </div>
       <label for="articleText">Paste article text</label>
       <textarea id="articleText" placeholder="Paste full article content here..."></textarea>
       <div class="controls">
@@ -90,6 +89,23 @@
         <summary>Warnings</summary>
         <ul id="warningsList"></ul>
       </details>
+
+      <article class="detail-card chat-panel" id="chatPanel">
+        <h4>Ask Follow-up</h4>
+        <p class="mini-value">Ask grounded questions about this exact article and its analysis results.</p>
+        <div class="chat-quick-prompts">
+          <button type="button" class="chat-prompt" data-prompt="Why did you mark this as review?">Why did you mark this as review?</button>
+          <button type="button" class="chat-prompt" data-prompt="Which claims are most suspicious here?">Which claims are most suspicious?</button>
+          <button type="button" class="chat-prompt" data-prompt="What additional evidence should I verify next?">What additional evidence should I verify next?</button>
+        </div>
+        <div id="chatThread" class="chat-thread">
+          <p class="chat-placeholder">Run analysis first, then ask follow-up questions.</p>
+        </div>
+        <div class="chat-controls">
+          <input id="chatInput" type="text" placeholder="Ask a follow-up question..." />
+          <button id="chatSendBtn" type="button">Send</button>
+        </div>
+      </article>
     </section>
   </main>
 

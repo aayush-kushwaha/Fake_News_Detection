@@ -13,6 +13,8 @@ from app.model_service import FakeNewsModelService
 from app.schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
+    ChatFollowupRequest,
+    ChatFollowupResponse,
     FinalAssessment,
     FactCheckResponse,
     HealthResponse,
@@ -22,6 +24,7 @@ from app.schemas import (
     PredictResponse,
 )
 from groq_utils import (
+    ask_groq,
     explain_fake_news_risk,
     fact_check_with_external_references,
     summarize_article,
@@ -115,6 +118,55 @@ def _fuse_assessments(
         confidence=confidence,
         agreement_status=agreement_status,
         explanation="Final recommendation combines ML writing-pattern risk with LLM evidence verification.",
+    )
+
+
+def _build_followup_prompt(payload: ChatFollowupRequest) -> str:
+    article_excerpt = payload.text[:1800]
+
+    ml_block = "ML assessment unavailable."
+    if payload.ml_assessment is not None:
+        ml_block = (
+            f"label={payload.ml_assessment.label_name}, "
+            f"confidence={payload.ml_assessment.confidence:.2f}, "
+            f"summary={payload.ml_assessment.summary}"
+        )
+
+    llm_block = "LLM assessment unavailable."
+    if payload.llm_assessment is not None:
+        llm_block = (
+            f"verdict={payload.llm_assessment.verdict}, "
+            f"confidence={payload.llm_assessment.confidence}, "
+            f"trusted={payload.llm_assessment.has_trusted_references}, "
+            f"explanation={payload.llm_assessment.explanation}"
+        )
+
+    final_block = "Final recommendation unavailable."
+    if payload.final_assessment is not None:
+        final_block = (
+            f"verdict={payload.final_assessment.verdict}, "
+            f"confidence={payload.final_assessment.confidence}, "
+            f"agreement={payload.final_assessment.agreement_status}, "
+            f"explanation={payload.final_assessment.explanation}"
+        )
+
+    refs_lines: list[str] = []
+    if payload.fact_check is not None and payload.fact_check.references:
+        for idx, ref in enumerate(payload.fact_check.references[:4], start=1):
+            refs_lines.append(f"[{idx}] {ref.title} | {ref.url} | source_type={ref.source_type}")
+
+    refs_block = "\n".join(refs_lines) if refs_lines else "No references available."
+
+    return (
+        "You are Veritas Lens follow-up assistant. Answer ONLY using the provided analysis context. "
+        "If information is missing, say it is unavailable. Keep answers concise (max 6 bullet points).\n\n"
+        f"Article excerpt:\n{article_excerpt}\n\n"
+        f"ML assessment:\n{ml_block}\n\n"
+        f"LLM assessment:\n{llm_block}\n\n"
+        f"Final recommendation:\n{final_block}\n\n"
+        f"References:\n{refs_block}\n\n"
+        f"User question: {payload.question}\n\n"
+        "Response style: direct, grounded, and non-speculative."
     )
 
 
@@ -237,3 +289,14 @@ def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         fact_check=fact_check,
         warnings=warnings,
     )
+
+
+@app.post("/api/chat-followup", response_model=ChatFollowupResponse)
+def chat_followup(payload: ChatFollowupRequest) -> ChatFollowupResponse:
+    prompt = _build_followup_prompt(payload)
+    try:
+        answer = ask_groq(prompt)
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Follow-up chat unavailable: {exc}") from exc
+
+    return ChatFollowupResponse(answer=answer, grounded=True, used_llm=True)
